@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-// BankAccount Class
+// Represents a bank account with balance and transaction history
 class BankAccount {
     private double balance;
     private ArrayList<String> transactions;
@@ -20,6 +20,8 @@ class BankAccount {
         if (amount > 0) {
             balance += amount;
             transactions.add("Deposited: ₹" + amount);
+        } else {
+            transactions.add("Failed deposit attempt: ₹" + amount);
         }
     }
 
@@ -42,7 +44,7 @@ class BankAccount {
     }
 }
 
-// ATM Class
+// ATM class handles menu and operations
 class ATM {
     private BankAccount account;
     private final int correctPIN;
@@ -55,14 +57,21 @@ class ATM {
     public void start() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter your 4-digit PIN: ");
+
+        // Handle non-integer input safely
+        while (!scanner.hasNextInt()) {
+            System.out.print("Invalid input. Enter 4-digit PIN: ");
+            scanner.next();
+        }
+
         int enteredPIN = scanner.nextInt();
 
         if (enteredPIN != correctPIN) {
-            System.out.println("Invalid PIN! Access Denied.");
+            System.out.println("❌ Invalid PIN! Access Denied.");
             return;
         }
 
-        System.out.println("Login successful.\n");
+        System.out.println("✅ Login successful.");
 
         int choice;
         do {
@@ -75,9 +84,10 @@ class ATM {
             System.out.print("Enter your choice: ");
 
             while (!scanner.hasNextInt()) {
-                System.out.print("Please enter a number: ");
+                System.out.print("Please enter a valid number: ");
                 scanner.next();
             }
+
             choice = scanner.nextInt();
 
             switch (choice) {
@@ -98,44 +108,44 @@ class ATM {
                     account.printTransactionHistory();
                     break;
                 case 5:
-                    System.out.println("Thank you for using the ATM.");
+                    System.out.println("👋 Thank you for using the ATM. Goodbye!");
                     break;
                 default:
-                    System.out.println("Invalid choice!");
+                    System.out.println("⚠️ Invalid choice! Please try again.");
             }
 
         } while (choice != 5);
     }
 
     private void checkBalance() {
-        System.out.printf("Your balance is: ₹%.2f\n", account.getBalance());
+        System.out.printf("💰 Your balance is: ₹%.2f\n", account.getBalance());
     }
 
     private void depositMoney(double amount) {
         if (amount <= 0) {
-            System.out.println("Deposit amount must be positive.");
+            System.out.println("⚠️ Deposit amount must be positive.");
         } else {
             account.deposit(amount);
-            System.out.println("Deposit successful.");
+            System.out.println("✅ Deposit successful.");
         }
     }
 
     private void withdrawMoney(double amount) {
         if (amount <= 0) {
-            System.out.println("Withdrawal amount must be positive.");
+            System.out.println("⚠️ Withdrawal amount must be positive.");
         } else if (account.withdraw(amount)) {
-            System.out.println("Withdrawal successful.");
+            System.out.println("✅ Withdrawal successful.");
         } else {
-            System.out.println("Insufficient balance. Withdrawal failed.");
+            System.out.println("❌ Insufficient balance. Withdrawal failed.");
         }
     }
 }
 
-// Main Class
+// Main class to run the ATM system
 public class ATMInterfaceWithPIN {
     public static void main(String[] args) {
         BankAccount userAccount = new BankAccount(5000.00); // Initial balance
-        int userPIN = 1234; // Set your desired PIN here
+        int userPIN = 1234; // 4-digit PIN
         ATM atm = new ATM(userAccount, userPIN);
         atm.start();
     }
